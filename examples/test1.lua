@@ -1,3 +1,2 @@
-song.set_bpm(140)
-
-song.generate_key(C4 + 1)
+print(note "C#4" )
+print(note "c$3" )
