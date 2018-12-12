@@ -6,18 +6,27 @@
 struct Note {
 	Note()
 	{
+		channel = 0;
 		pitch = 0;
 		start = 0;
 		length = 0;
 	}
-
+	
+	int channel; 
 	int pitch; // note 
 	double start; // beat 
 	double length; // beat
 };
 
 struct Song {
+	Song() 
+	{
+		beat = 0.0;
+		velocity = 127; 
+	}
+	
 	double beat;
+	int velocity;
 	std::vector<Note> notes; 
 };
 

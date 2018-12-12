@@ -3,8 +3,11 @@
 #include <cstring>
 #include <iostream>
 
+static Song *song; 
+
 LuaMidi::LuaMidi()
 {
+	song = new Song() ;
 	_lua = luaL_newstate();
 	luaL_openlibs(_lua);
 }
@@ -12,6 +15,7 @@ LuaMidi::LuaMidi()
 LuaMidi::~LuaMidi()
 {
 	lua_close(_lua);
+	delete song; 
 }
 
 bool LuaMidi::load_file(const char *path)
@@ -127,6 +131,56 @@ int LuaMidi::_notename_to_midi(lua_State *L)
 
 int LuaMidi::_play(lua_State *L)
 {
+	std::vector<int> channels;
+	std::vector<int> pitches;
+	std::vector<double> lengths; 
+
+	if (lua_type(L, 1) == LUA_TNUMBER) {
+		channels.push_back(lua_tonumber(L, 1));
+	} else if (lua_type(L, 1) == LUA_TTABLE) {
+		for (int i = 0; i < luaL_len(L, 1); i++) {
+			lua_geti(L, 1, i + 1); 
+			int channel = lua_tointeger(L, -1);
+			lua_pop(L, 1);
+			channels.push_back(channel);	
+		}
+	}
+
+	if (lua_type(L, 2) == LUA_TNUMBER) {
+		pitches.push_back(lua_tonumber(L, 1));
+	} else if (lua_type(L, 2) == LUA_TTABLE) {
+		for (int i = 0; i < luaL_len(L, 2); i++) {
+			lua_geti(L, 2, i + 1); 
+			int pitch = lua_tointeger(L, -1);
+			lua_pop(L, 1);
+			pitches.push_back(pitch);	
+		}
+	}
+
+	if (lua_type(L, 3) == LUA_TNUMBER) {
+		lengths.push_back(lua_tonumber(L, 1));
+	} else if (lua_type(L, 3) == LUA_TTABLE) {
+		for (int i = 0; i < luaL_len(L, 3); i++) {
+			lua_geti(L, 3, i + 1); 
+			double length = lua_tonumber(L, -1);
+			lua_pop(L, 1);
+			lengths.push_back(length);	
+		}
+	}
+
+	// now combine them ALL //
+	for (auto channel : channels) {
+		for (auto pitch : pitches) {
+			for (auto length : lengths) {
+				Note nt;
+				nt.channel = channel;
+				nt.pitch = pitch;
+				nt.length = length;
+				song->notes.push_back(nt);
+			}
+		}
+	}
+
 	return 0;
 }
 
