@@ -38,13 +38,20 @@ void LuaMidi::_init_midilib()
 {
 	lua_pushcfunction(_lua, &LuaMidi::_notename_to_midi);
 	lua_setglobal(_lua, "note");
+
+	lua_pushcfunction(_lua, &LuaMidi::_play); 
+	lua_setglobal(_lua, "play");
+
+	lua_pushcfunction(_lua, &LuaMidi::_next);
+	lua_setglobal(_lua, "next");
 }
 
 int LuaMidi::_notename_to_midi(lua_State *L) 
 {
-	// note(notename:str) returns midi //
 	const char *notename = luaL_checkstring(L, 1);
-       int len = strlen(notename);	
+	// note(notename:str) returns midi //
+	
+	int len = strlen(notename);	
 	if (len > 3) {
 		luaL_error(L, "Invalid notename %s. Longer than 3 characters.", notename); 
 		return 0;
@@ -113,7 +120,17 @@ int LuaMidi::_notename_to_midi(lua_State *L)
 	}
 
 	int midi_note = (octave * 12) + pc + delta; 
-	
 	lua_pushinteger(L, midi_note);
 	return 1;	
+
+}
+
+int LuaMidi::_play(lua_State *L)
+{
+	return 0;
+}
+
+int LuaMidi::_next(lua_State *L)
+{
+	return 0;
 }
